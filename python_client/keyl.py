@@ -14,7 +14,7 @@ from pynput import keyboard
 
 
 # connect with server...
-socketIO = SocketIO('10.128.122.101', 3000, LoggingNamespace)
+socketIO = SocketIO('localhost', 3000, LoggingNamespace)
 
 
 
@@ -38,18 +38,6 @@ def on_release(key):
         # Stop listener
         return False
 
-
-
-
-
-
-
-
-
-
-
-
-
 def keyboard_list():
     print("keyboard thread started")
 
@@ -59,10 +47,7 @@ def keyboard_list():
         on_release=on_release) as listener:
         listener.join()
 
-
-
 def server_list():
-
     # server events...
     def response(*args):
         print('responseMsg', args)
@@ -78,8 +63,6 @@ def server_list():
         socketIO.emit('message', {'Hello': 'you again'})
     
     print("server thread started")
-
-
     
     #socketIO.emit('message', {'Hello': 'you'})    # wysyla to do serveru message: text
     socketIO.on('init', on_init)
@@ -89,6 +72,8 @@ def server_list():
     socketIO.wait()
 
 
+# sudo touch /private/var/db/.AccessibilityAPIEnabled
+# sudo rm /private/var/db/.AccessibilityAPIEnabled
 
 server = threading.Thread(name='server_listener', target=server_list)
 key = threading.Thread(name='key_listener', target=keyboard_list)

