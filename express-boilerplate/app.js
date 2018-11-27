@@ -73,8 +73,18 @@ io.on('connection', function(socket){
   })
 
   socket.on('mouseLeftClick', (data) => {
-  	console.log('clicked left')
+  	//console.log('clicked left')
   	io.sockets.to(remoteSocketId).emit('mouseLeftClick');
+  })
+
+  socket.on('mouseRightClick', (data) => {
+	//console.log('clicked right')
+	io.sockets.to(remoteSocketId).emit('mouseRightClick');
+  })
+
+  socket.on('mouseDoubleClick', (data) => {
+	//console.log('clicked double')
+	io.sockets.to(remoteSocketId).emit('mouseDoubleClick');
   })
 
   console.log('a user connected', socket.id);

@@ -139,6 +139,8 @@ def server_list():
     socketIO.on('screenshot', screenshot)
     socketIO.on('mouse', mouse_control)
     socketIO.on('mouseLeftClick', mouse_left_click)
+    socketIO.on('mouseRightClick', mouse_right_click)
+    socketIO.on('mouseDoubleClick', mouse_double_click)
     socketIO.on('runCamera', run_camera)
     
     
