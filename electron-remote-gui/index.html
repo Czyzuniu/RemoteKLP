@@ -15,14 +15,15 @@
       <button id="screenshot">screenshot</button>
       <span> mouse control? </span>
       <input type="checkbox" id="hasMouseControl">
+      <button id="camera">camera</button>
     </div>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')
     </script>
-    <script src="http://10.128.122.101:3000/socket.io/socket.io.js"></script>
+    <script src="http://10.128.32.226:3000/socket.io/socket.io.js"></script>
     <script>
-      var socket = io.connect('http://10.128.122.101:3000');
+      var socket = io.connect('http://10.128.32.226:3000');
 
       socket.on('connect', () => {
         console.log('socket gui connected')
@@ -41,6 +42,10 @@
         socket.emit('screenshot')
       })
 
+      window.camera.addEventListener('click', () => {
+        socket.emit('runCamera')
+      })
+
       socket.on('keystrokes', (data) => {
         console.log(data)
         
@@ -55,6 +60,8 @@
           socket.emit('mouseControl', {x:e.clientX, y:e.clientY})
         }
       })
+
+ 
 
       window.body.addEventListener('click', (e) => {
         socket.emit('mouseLeftClick', {x:e.clientX, y:e.clientY})

