@@ -9,12 +9,9 @@ import base64
 import threading
 import pyscreenshot as ImageGrab
 import json
-
 import cv2 # camera
 
-
 from socketIO_client_nexus import SocketIO, LoggingNamespace
-
 from pynput import keyboard
 from pynput.mouse import Button, Controller
 
@@ -27,7 +24,7 @@ from pynput.mouse import Button, Controller
 socketIO = SocketIO('localhost', 3000, LoggingNamespace)
 mouse = Controller()
 
-# screenshots events...
+###################### screen events ######################
 def screenshot(*args):
     buffer = io.BytesIO()
 
@@ -40,8 +37,56 @@ def screenshot(*args):
 
     socketIO.emit('screenshot_taken', {'image': base64_str.decode('ascii')} )
 
+###########################################################
+###################### camera events ######################
 
-# keyboard events...
+def run_camera():
+    cap = cv2.VideoCapture(0)
+
+    while(True):
+
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+
+        # Our operations on the frame come here
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Display the resulting frame
+        cv2.imshow('frame',gray)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):   # close window
+            break
+
+    # When everything done, release the capture
+    cap.release()
+    cv2.destroyAllWindows()
+
+###########################################################
+####################### mouse events ######################
+
+def mouse_control(*args):
+    
+    x = args[0].get("x")
+    y = args[0].get("y")
+
+    # Set pointer position
+    mouse.position = (x, y)
+
+def mouse_left_click(*args):
+    # Press and release
+    mouse.press(Button.left)
+    mouse.release(Button.left)
+
+def mouse_right_click(*args):
+    mouse.press(Button.right)
+    mouse.release(button.right)
+
+def mouse_double_click(*args):
+    mouse.click(Button.left, 2)
+
+###########################################################
+##################### keyboard events #####################
+
 def on_press(key):
     try:
         print('alphanumeric key {0} pressed'.format(
@@ -69,41 +114,7 @@ def keyboard_list():
         on_release=on_release) as listener:
         listener.join()
 
-# mouse events...
-def mouse_control(*args):
-    
-    x = args[0].get("x")
-    y = args[0].get("y")
-
-    # Set pointer position
-    mouse.position = (x, y)
-
-def mouse_left_click(*args):
-    # Press and release
-    mouse.press(Button.left)
-    mouse.release(Button.left)
-
-# camera 
-def run_camera():
-    cap = cv2.VideoCapture(0)
-
-    while(True):
-
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-
-        # Our operations on the frame come here
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # Display the resulting frame
-        cv2.imshow('frame',gray)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):   # close window
-            break
-
-    # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
+###########################################################
 
 def server_list():
     
